@@ -11,11 +11,11 @@ export const Route = createFileRoute("/_authenticated/exams/$id/attempt")({
   loader: async ({ context, params }) => {
     await context.queryClient.ensureQueryData({
       queryKey: ["exam", params.id],
-      queryFn: () => getExamById({ id: params.id }),
+      queryFn: () => getExamById({ data: { id: params.id } }),
     });
     await context.queryClient.ensureQueryData({
       queryKey: ["exam-questions", params.id],
-      queryFn: () => getExamQuestions({ exam_id: params.id }),
+      queryFn: () => getExamQuestions({ data: { exam_id: params.id } }),
     });
   },
   head: () => ({
@@ -36,11 +36,11 @@ function ExamAttemptPage() {
 
   const { data: exam } = useSuspenseQuery({
     queryKey: ["exam", id],
-    queryFn: () => getExam({ id }),
+    queryFn: () => getExam({ data: { id } }),
   });
   const { data: questions } = useSuspenseQuery({
     queryKey: ["exam-questions", id],
-    queryFn: () => getQuestions({ exam_id: id }),
+    queryFn: () => getQuestions({ data: { exam_id: id } }),
   });
 
   const [attemptId, setAttemptId] = useState<string | null>(null);
@@ -50,7 +50,7 @@ function ExamAttemptPage() {
   const [result, setResult] = useState<{ score: number; total: number } | null>(null);
 
   useEffect(() => {
-    startAttempt({ exam_id: id }).then((res) => setAttemptId(res.attempt_id));
+    startAttempt({ data: { exam_id: id } }).then((res) => setAttemptId(res.attempt_id));
   }, [id, startAttempt]);
 
   useEffect(() => {
@@ -76,9 +76,11 @@ function ExamAttemptPage() {
       selected_option_index: answers[q.id] ?? null,
     }));
     const res = await submitAttempt({
-      attempt_id: attemptId ?? "",
-      exam_id: id,
-      answers: answerList,
+      data: {
+        attempt_id: attemptId ?? "",
+        exam_id: id,
+        answers: answerList,
+      },
     });
     setResult(res);
     toast.success(`Exam submitted! Score: ${res.score}/${res.total}`);
