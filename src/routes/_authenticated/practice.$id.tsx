@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/practice/$id")({
   loader: async ({ context, params }) => {
     await context.queryClient.ensureQueryData({
       queryKey: ["practice-problem", params.id],
-      queryFn: () => getPracticeProblem({ id: params.id }),
+      queryFn: () => getPracticeProblem({ data: { id: params.id } }),
     });
   },
   head: ({ loaderData }) => ({
@@ -31,7 +31,7 @@ function PracticeProblemPage() {
 
   const { data: problem } = useSuspenseQuery({
     queryKey: ["practice-problem", id],
-    queryFn: () => getProblem({ id }),
+    queryFn: () => getProblem({ data: { id } }),
   });
 
   const [code, setCode] = useState(problem.starter_code);
@@ -55,10 +55,12 @@ function PracticeProblemPage() {
         .join("\n---\n");
 
       await submitSolution({
-        problem_id: problem.id,
-        code,
-        passed: allPassed,
-        output,
+        data: {
+          problem_id: problem.id,
+          code,
+          passed: allPassed,
+          output,
+        },
       });
 
       if (allPassed) {

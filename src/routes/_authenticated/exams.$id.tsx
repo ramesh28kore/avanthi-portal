@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_authenticated/exams/$id")({
   loader: async ({ context, params }) => {
     await context.queryClient.ensureQueryData({
       queryKey: ["exam", params.id],
-      queryFn: () => getExamById({ id: params.id }),
+      queryFn: () => getExamById({ data: { id: params.id } }),
     });
   },
   head: ({ loaderData }) => ({
@@ -26,7 +26,7 @@ function ExamDetailPage() {
   const getExam = useServerFn(getExamById);
   const { data: exam } = useSuspenseQuery({
     queryKey: ["exam", id],
-    queryFn: () => getExam({ id }),
+    queryFn: () => getExam({ data: { id } }),
   });
 
   return (

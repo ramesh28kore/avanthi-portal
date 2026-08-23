@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_authenticated/cheat-sheets/$slug")({
   loader: async ({ context, params }) => {
     await context.queryClient.ensureQueryData({
       queryKey: ["cheat-sheet", params.slug],
-      queryFn: () => getCheatSheetBySlug({ slug: params.slug }),
+      queryFn: () => getCheatSheetBySlug({ data: { slug: params.slug } }),
     });
   },
   head: ({ loaderData }) => ({
@@ -26,7 +26,7 @@ function CheatSheetDetailPage() {
   const getSheet = useServerFn(getCheatSheetBySlug);
   const { data: sheet } = useSuspenseQuery({
     queryKey: ["cheat-sheet", slug],
-    queryFn: () => getSheet({ slug }),
+    queryFn: () => getSheet({ data: { slug } }),
   });
 
   const content = sheet.content as Array<{ heading?: string; body?: string; code?: string }>;
