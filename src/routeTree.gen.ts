@@ -15,8 +15,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheatSheetsIndexRouteImport } from './routes/_authenticated/cheat-sheets.index'
 import { Route as AuthenticatedCheatSheetsSlugRouteImport } from './routes/_authenticated/cheat-sheets.$slug'
+import { Route as AuthenticatedExamsIndexRouteImport } from './routes/_authenticated/exams.index'
+import { Route as AuthenticatedExamsIdRouteImport } from './routes/_authenticated/exams.$id'
 import { Route as AuthenticatedPracticeIndexRouteImport } from './routes/_authenticated/practice.index'
 import { Route as AuthenticatedPracticeIdRouteImport } from './routes/_authenticated/practice.$id'
+import { Route as AuthenticatedExamsIdAttemptRouteImport } from './routes/_authenticated/exams.$id.attempt'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -49,6 +52,16 @@ const AuthenticatedCheatSheetsSlugRoute =
     path: '/cheat-sheets/$slug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedExamsIndexRoute = AuthenticatedExamsIndexRouteImport.update({
+  id: '/exams/',
+  path: '/exams/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedExamsIdRoute = AuthenticatedExamsIdRouteImport.update({
+  id: '/exams/$id',
+  path: '/exams/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPracticeIndexRoute =
   AuthenticatedPracticeIndexRouteImport.update({
     id: '/practice/',
@@ -60,24 +73,36 @@ const AuthenticatedPracticeIdRoute = AuthenticatedPracticeIdRouteImport.update({
   path: '/practice/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedExamsIdAttemptRoute =
+  AuthenticatedExamsIdAttemptRouteImport.update({
+    id: '/attempt',
+    path: '/attempt',
+    getParentRoute: () => AuthenticatedExamsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/cheat-sheets/$slug': typeof AuthenticatedCheatSheetsSlugRoute
+  '/exams/$id': typeof AuthenticatedExamsIdRouteWithChildren
   '/practice/$id': typeof AuthenticatedPracticeIdRoute
   '/cheat-sheets/': typeof AuthenticatedCheatSheetsIndexRoute
+  '/exams/': typeof AuthenticatedExamsIndexRoute
   '/practice/': typeof AuthenticatedPracticeIndexRoute
+  '/exams/$id/attempt': typeof AuthenticatedExamsIdAttemptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/cheat-sheets/$slug': typeof AuthenticatedCheatSheetsSlugRoute
+  '/exams/$id': typeof AuthenticatedExamsIdRouteWithChildren
   '/practice/$id': typeof AuthenticatedPracticeIdRoute
   '/cheat-sheets': typeof AuthenticatedCheatSheetsIndexRoute
+  '/exams': typeof AuthenticatedExamsIndexRoute
   '/practice': typeof AuthenticatedPracticeIndexRoute
+  '/exams/$id/attempt': typeof AuthenticatedExamsIdAttemptRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,9 +111,12 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/cheat-sheets/$slug': typeof AuthenticatedCheatSheetsSlugRoute
+  '/_authenticated/exams/$id': typeof AuthenticatedExamsIdRouteWithChildren
   '/_authenticated/practice/$id': typeof AuthenticatedPracticeIdRoute
   '/_authenticated/cheat-sheets/': typeof AuthenticatedCheatSheetsIndexRoute
+  '/_authenticated/exams/': typeof AuthenticatedExamsIndexRoute
   '/_authenticated/practice/': typeof AuthenticatedPracticeIndexRoute
+  '/_authenticated/exams/$id/attempt': typeof AuthenticatedExamsIdAttemptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,18 +125,24 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/cheat-sheets/$slug'
+    | '/exams/$id'
     | '/practice/$id'
     | '/cheat-sheets/'
+    | '/exams/'
     | '/practice/'
+    | '/exams/$id/attempt'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/dashboard'
     | '/cheat-sheets/$slug'
+    | '/exams/$id'
     | '/practice/$id'
     | '/cheat-sheets'
+    | '/exams'
     | '/practice'
+    | '/exams/$id/attempt'
   id:
     | '__root__'
     | '/'
@@ -116,9 +150,12 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/_authenticated/cheat-sheets/$slug'
+    | '/_authenticated/exams/$id'
     | '/_authenticated/practice/$id'
     | '/_authenticated/cheat-sheets/'
+    | '/_authenticated/exams/'
     | '/_authenticated/practice/'
+    | '/_authenticated/exams/$id/attempt'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +208,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCheatSheetsSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/exams/': {
+      id: '/_authenticated/exams/'
+      path: '/exams'
+      fullPath: '/exams/'
+      preLoaderRoute: typeof AuthenticatedExamsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/exams/$id': {
+      id: '/_authenticated/exams/$id'
+      path: '/exams/$id'
+      fullPath: '/exams/$id'
+      preLoaderRoute: typeof AuthenticatedExamsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/practice/': {
       id: '/_authenticated/practice/'
       path: '/practice'
@@ -185,22 +236,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPracticeIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/exams/$id/attempt': {
+      id: '/_authenticated/exams/$id/attempt'
+      path: '/attempt'
+      fullPath: '/exams/$id/attempt'
+      preLoaderRoute: typeof AuthenticatedExamsIdAttemptRouteImport
+      parentRoute: typeof AuthenticatedExamsIdRoute
+    }
   }
 }
+
+interface AuthenticatedExamsIdRouteChildren {
+  AuthenticatedExamsIdAttemptRoute: typeof AuthenticatedExamsIdAttemptRoute
+}
+
+const AuthenticatedExamsIdRouteChildren: AuthenticatedExamsIdRouteChildren = {
+  AuthenticatedExamsIdAttemptRoute: AuthenticatedExamsIdAttemptRoute,
+}
+
+const AuthenticatedExamsIdRouteWithChildren =
+  AuthenticatedExamsIdRoute._addFileChildren(AuthenticatedExamsIdRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedCheatSheetsSlugRoute: typeof AuthenticatedCheatSheetsSlugRoute
+  AuthenticatedExamsIdRoute: typeof AuthenticatedExamsIdRouteWithChildren
   AuthenticatedPracticeIdRoute: typeof AuthenticatedPracticeIdRoute
   AuthenticatedCheatSheetsIndexRoute: typeof AuthenticatedCheatSheetsIndexRoute
+  AuthenticatedExamsIndexRoute: typeof AuthenticatedExamsIndexRoute
   AuthenticatedPracticeIndexRoute: typeof AuthenticatedPracticeIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedCheatSheetsSlugRoute: AuthenticatedCheatSheetsSlugRoute,
+  AuthenticatedExamsIdRoute: AuthenticatedExamsIdRouteWithChildren,
   AuthenticatedPracticeIdRoute: AuthenticatedPracticeIdRoute,
   AuthenticatedCheatSheetsIndexRoute: AuthenticatedCheatSheetsIndexRoute,
+  AuthenticatedExamsIndexRoute: AuthenticatedExamsIndexRoute,
   AuthenticatedPracticeIndexRoute: AuthenticatedPracticeIndexRoute,
 }
 
