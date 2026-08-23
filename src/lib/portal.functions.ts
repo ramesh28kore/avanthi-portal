@@ -60,7 +60,7 @@ export const listPracticeProblems = createServerFn({ method: "GET" }).handler(as
 });
 
 export const getPracticeProblem = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({ id: z.string() }).parse(data))
+  .validator(z.object({ id: z.string() }))
   .handler(async ({ data }) => {
     const { data: item, error } = await supabaseAdmin
       .from("practice_problems")
@@ -75,15 +75,13 @@ export const getPracticeProblem = createServerFn({ method: "GET" })
 
 export const submitPracticeSolution = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) =>
-    z
-      .object({
-        problem_id: z.string(),
-        code: z.string(),
-        passed: z.boolean(),
-        output: z.string().optional(),
-      })
-      .parse(data)
+  .validator(
+    z.object({
+      problem_id: z.string(),
+      code: z.string(),
+      passed: z.boolean(),
+      output: z.string().optional(),
+    })
   )
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("practice_submissions").insert({
@@ -119,7 +117,7 @@ export const listExams = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 export const getExamById = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({ id: z.string() }).parse(data))
+  .validator(z.object({ id: z.string() }))
   .handler(async ({ data }) => {
     const { data: item, error } = await supabaseAdmin
       .from("exams")
@@ -133,7 +131,7 @@ export const getExamById = createServerFn({ method: "GET" })
   });
 
 export const getExamQuestions = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({ exam_id: z.string() }).parse(data))
+  .validator(z.object({ exam_id: z.string() }))
   .handler(async ({ data }) => {
     const { data: items, error } = await supabaseAdmin
       .from("exam_questions")
@@ -155,7 +153,7 @@ export const getExamQuestions = createServerFn({ method: "GET" })
 
 export const startExamAttempt = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) => z.object({ exam_id: z.string() }).parse(data))
+  .validator(z.object({ exam_id: z.string() }))
   .handler(async ({ data, context }) => {
     const { data: existing, error: existingError } = await context.supabase
       .from("exam_attempts")
@@ -182,19 +180,17 @@ export const startExamAttempt = createServerFn({ method: "POST" })
 
 export const submitExamAttempt = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) =>
-    z
-      .object({
-        attempt_id: z.string(),
-        exam_id: z.string(),
-        answers: z.array(
-          z.object({
-            question_id: z.string(),
-            selected_option_index: z.number().nullable(),
-          })
-        ),
-      })
-      .parse(data)
+  .validator(
+    z.object({
+      attempt_id: z.string(),
+      exam_id: z.string(),
+      answers: z.array(
+        z.object({
+          question_id: z.string(),
+          selected_option_index: z.number().nullable(),
+        })
+      ),
+    })
   )
   .handler(async ({ data, context }) => {
     const { data: questions, error: qError } = await context.supabase
