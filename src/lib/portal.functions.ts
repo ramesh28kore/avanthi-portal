@@ -24,7 +24,7 @@ export const listCheatSheets = createServerFn({ method: "GET" }).handler(async (
 });
 
 export const getCheatSheetBySlug = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({ slug: z.string() }).parse(data))
+  .validator(z.object({ slug: z.string() }))
   .handler(async ({ data }) => {
     const { data: item, error } = await supabaseAdmin
       .from("cheat_sheets")
